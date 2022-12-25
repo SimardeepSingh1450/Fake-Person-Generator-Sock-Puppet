@@ -96,6 +96,9 @@ async function run(){
     const vehicleFromSite=await page.evaluate(()=>document.querySelector('#details .content .info .content .extra .dl-horizontal:nth-child(34) dd').innerText);
     console.log('Vehicle :',vehicleFromSite);    
 
+    const guidFromSite=await page.evaluate(()=>document.querySelector('#details .content .info .content .extra .dl-horizontal:nth-child(35) dd').innerText);
+    console.log('GUID :',guidFromSite);   
+
 
     //Going to secondPage 
     await page.goto("https://thispersondoesnotexist.com/",{waitUntil:'load',timeout:0});
@@ -123,7 +126,8 @@ async function run(){
         Height:heightFromSite,
         Weight:weightFromSite,
         BloodType:bloodTypeFromSite,
-        Vehicle:vehicleFromSite
+        Vehicle:vehicleFromSite,
+        GUID:guidFromSite
     }
 
     //writing the data inside valid json
