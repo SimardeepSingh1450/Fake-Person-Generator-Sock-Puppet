@@ -10,7 +10,7 @@ app.get('/',async(req,res)=>{
 
 app.get('/run-puppeteer',async(req,res)=>{
     run();
-    res.send('Ran the puppeteer Code');
+    res.send('Fake Identity and Image Generated Locally on the System')
 })
 
 app.listen(3001||process.env.PORT,()=>{
@@ -23,7 +23,7 @@ const puppeteer=require('puppeteer');
 
 async function run(){
     const browser=await puppeteer.launch({
-        headless:false,
+        headless:true,
         defaultViewport:false
     });
 
@@ -104,9 +104,9 @@ async function run(){
     await page.screenshot({path:'randomperson.png',fullPage:true});
 
     const fakePerson={
-        name:userFromSite,
-        address:addressFromSite,
-        mumMaidenName:mumFromSite,
+        Name:userFromSite,
+        Address:addressFromSite,
+        MotherMaidenName:mumFromSite,
         SSN:ssnFromSite,
         geoPoints:geoFromSite,
         PhoneNumber:phnFromSite,
