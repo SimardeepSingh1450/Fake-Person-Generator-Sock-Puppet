@@ -15,12 +15,6 @@ app.get('/',async(req,res)=>{
     res.send('Server is working Fine')
 })
 
-function sleep(ms) {
-    return new Promise((resolve) => {
-      setTimeout(resolve, ms);
-    });
-  }
-
 app.get('/run-puppeteer',async(req,res)=>{
     // run();
     // // res.send('Fake Identity and Image Generated Locally on the System')
@@ -111,7 +105,7 @@ app.get('/run-puppeteer',async(req,res)=>{
 
 
     //Going to secondPage
-    await page.goto("https://thispersondoesnotexist.com/",{waitUntil:'load',timeout:0});
+    // await page.goto("https://thispersondoesnotexist.com/",{waitUntil:'load',timeout:0});
 
     //download image code for puppeteer
     // await page.screenshot({path:'./public/randomperson.png',fullPage:true});
@@ -154,12 +148,11 @@ app.get('/run-puppeteer',async(req,res)=>{
     //     }
     // })
 
-   //sleep function
-    await sleep(5000);
+    console.log('Sending response json');
 
     res.json(fakePerson);
     // await browser.close();
-
+    console.log('Json sent to frontend');
 
 
 
