@@ -162,7 +162,7 @@ app.get('/run-puppeteer',async(req,res)=>{
 //     res.json(fakePersonJson);
 // })
 
-app.listen(3003||process.env.PORT,()=>{
+app.listen(process.env.PORT||3003,()=>{
     console.log('Server is listening at 3003...')
 })
 
