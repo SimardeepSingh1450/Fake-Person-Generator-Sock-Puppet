@@ -3,31 +3,22 @@ const app=express();
 const fs=require('fs');
 app.use(express.json());
 
-const fakePersonJson=require('./fakeperson.json');
-
-app.get('/',async(req,res)=>{
-    res.send('Chal rha hai')
-})
-
-
-app.get('/run-puppeteer',async(req,res)=>{
-    run();
-    res.send('Fake Identity and Image Generated Locally on the System')
-})
-
-app.get('/fetch-json',async(req,res)=>{
-    res.json(fakePersonJson);
-})
-
-app.listen(3001||process.env.PORT,()=>{
-    console.log('Server is listening at 3001...')
-})
-
-
 //Puppeteer Code
 const puppeteer=require('puppeteer');
 
-async function run(){
+// const fakePersonJson=require('./fakeperson.json');
+
+//uplaoding the image to frontend view
+app.use('/fetch-image',express.static('public'));
+
+app.get('/',async(req,res)=>{
+    res.send('Server is working Fine')
+})
+
+app.get('/run-puppeteer',async(req,res)=>{
+    // run();
+    // // res.send('Fake Identity and Image Generated Locally on the System')
+    // res.json(JSON.stringify(fakePersonMain));
     const browser=await puppeteer.launch({
         headless:true,
         defaultViewport:false
@@ -38,6 +29,9 @@ async function run(){
     await page.goto('https://www.fakenamegenerator.com/', {waitUntil: 'load', timeout: 0});
 
     const userFromSite=await page.evaluate(()=> document.querySelector('#details .content .info .content .address h3').innerText);
+    const nameSplitterArray=userFromSite.split(" ");
+    const firstNameFromSite=nameSplitterArray[0];
+    const lastNameFromSite=nameSplitterArray[2];
     console.log('User :',userFromSite);
 
     const addressFromSite=await page.evaluate(()=> document.querySelector('#details .content .info .content .address .adr').innerText);
@@ -47,7 +41,7 @@ async function run(){
     console.log('Mother\'s Maiden Name :',mumFromSite);
 
     const ssnFromSite=await page.evaluate(()=>document.querySelector('#details .content .info .content .extra .dl-horizontal:nth-child(2) dd').innerText);
-    const slicedSsn=ssnFromSite.slice(0,12);
+    const slicedSsn=ssnFromSite.slice(0,11);
     console.log('SSN :',slicedSsn);
 
     const geoFromSite=await page.evaluate(()=>document.querySelector('#details .content .info .content .extra .dl-horizontal:nth-child(3) dd').innerText);
@@ -66,7 +60,11 @@ async function run(){
     console.log('Zodiac :',zodiacFromSite);
 
     const emailFromSite=await page.evaluate(()=>document.querySelector('#details .content .info .content .extra .dl-horizontal:nth-child(12) dd').innerText);
-    console.log('Email :',emailFromSite);
+    const slicedEmail=emailFromSite.slice(0,-57);
+    console.log('Email :',slicedEmail);
+
+    const userNameFromSite=await page.evaluate(()=>document.querySelector('#details .content .info .content .extra .dl-horizontal:nth-child(13) dd').innerText);
+    console.log('Username :',userNameFromSite);
 
     const passwordFromSite=await page.evaluate(()=>document.querySelector('#details .content .info .content .extra .dl-horizontal:nth-child(14) dd').innerText);
     console.log('Password :',passwordFromSite);
@@ -100,29 +98,34 @@ async function run(){
     console.log('Blood Type :',bloodTypeFromSite);
 
     const vehicleFromSite=await page.evaluate(()=>document.querySelector('#details .content .info .content .extra .dl-horizontal:nth-child(34) dd').innerText);
-    console.log('Vehicle :',vehicleFromSite);    
+    console.log('Vehicle :',vehicleFromSite);
 
     const guidFromSite=await page.evaluate(()=>document.querySelector('#details .content .info .content .extra .dl-horizontal:nth-child(35) dd').innerText);
-    console.log('GUID :',guidFromSite);   
+    console.log('GUID :',guidFromSite);
 
 
-    //Going to secondPage 
+    //Going to secondPage
     await page.goto("https://thispersondoesnotexist.com/",{waitUntil:'load',timeout:0});
 
     //download image code for puppeteer
-    await page.screenshot({path:'randomperson.png',fullPage:true});
+    // await page.screenshot({path:'./public/randomperson.png',fullPage:true});
 
     const fakePerson={
         Name:userFromSite,
+        firstName:firstNameFromSite,
+        lastName:lastNameFromSite,
         Address:addressFromSite,
         MotherMaidenName:mumFromSite,
-        SSN:ssnFromSite,
+        SSN:slicedSsn,
         geoPoints:geoFromSite,
         PhoneNumber:phnFromSite,
         Birthday:bDayFromSite,
         Age:ageFromSite,
         Zodiac:zodiacFromSite,
-        Email:emailFromSite,
+        Email:slicedEmail,
+        gmail:'kannadanna1450@gmail.com',
+        gmailPass:'kannadanna2311',
+        Username:userNameFromSite,
         Password:passwordFromSite,
         BrowserAgent:browserAgentFromSite,
         DEBITCARD:visaorMasterCardFromSite,
@@ -136,33 +139,35 @@ async function run(){
         GUID:guidFromSite
     }
 
+
     //writing the data inside valid json
-    fs.writeFile('fakeperson.json',JSON.stringify(fakePerson),(err)=>{
-        if(err) throw err;
-        else {
-            console.log('success with json generation');
-        }
-    })
+    // fs.writeFile('fakeperson.json',JSON.stringify(fakePerson),(err)=>{
+    //     if(err) throw err;
+    //     else {
+    //         console.log('success with json generation');
+    //     }
+    // })
 
 
-    //uplaoding the image to tempfile
-    // await page.goto("https://tempfile.io/en",{waitUntil:'load',timeout:0});
 
-    // //upload file button
-    // const [filechooser]=await Promise.all([
-    //     page.waitForFileChooser(),
-    //     page.click(".btn btn-primary btn-lg px-5")
-    // ]);
-    // //passing the file
-    // filechooser.accept(["randomperson.jpg"]);
-
-    // //waiting for the upload process
-    // await page.waitForTimeout(6000)
-
-
+    res.json(fakePerson);
     // await browser.close();
 
 
-}
+
+
+})
+
+// app.get('/fetch-json',async(req,res)=>{
+//     res.json(fakePersonJson);
+// })
+
+app.listen(3003||process.env.PORT,()=>{
+    console.log('Server is listening at 3003...')
+})
+
+
+
+    
 
 // run();
