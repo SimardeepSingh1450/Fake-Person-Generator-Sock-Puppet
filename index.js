@@ -3,6 +3,9 @@ const app=express();
 const fs=require('fs');
 app.use(express.json());
 
+const cors=require('cors');
+app.use(cors());
+
 //Puppeteer Code
 const puppeteer=require('puppeteer');
 
